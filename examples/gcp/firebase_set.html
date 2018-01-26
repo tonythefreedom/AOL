@@ -1,0 +1,139 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<body>
+<!-- START Script -->
+<script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
+<script src="../sarah/jquery.min.js" charset="utf-8"></script>
+
+<script>
+
+  var config = {
+    apiKey: "AIzaSyDBtdO12PWhimPTckVm7eWcqEf6f3m7tAk",
+    authDomain: "proto-recipe.firebaseapp.com",
+    databaseURL: "https://proto-recipe.firebaseio.com",
+    projectId: "proto-recipe",
+    storageBucket: "proto-recipe.appspot.com",
+    messagingSenderId: "263199683560"
+  };
+  firebase.database.enableLogging(true);
+  firebase.initializeApp(config);
+
+//https://proto-recipe.firebaseio.com/users/ENAcSU32FwMKzh3NBItmizF6vme2/bots/BB-b10-20170523143814-muZAZ53gDT/sets
+//https://proto-recipe.firebaseio.com/users/ENAcSU32FwMKzh3NBItmizF6vme2/bots/BB-b10-20170523143814-muZAZ53gDT/updateInfo/sets
+//var setRef = firebase.database().ref().child('users').child('ENAcSU32FwMKzh3NBItmizF6vme2').child('bots').child('BB-b10-20170523143814-muZAZ53gDT');
+//var updateInfoRef = firebase.database().ref().child('users').child('ENAcSU32FwMKzh3NBItmizF6vme2').child('bots').child('BB-b10-20170523143814-muZAZ53gDT').child('updateInfo');
+//alert(setRef);
+
+var setRef="";
+var updateInfoRef="";
+
+function writeNewPost(json) {
+	  //alert($("#set_name").val());
+	  var newSetname = $("#set_name").val();
+	  var updates = {};
+	  updates['/sets/' + newSetname + '/'] = json;
+
+	  return setRef.update(updates);
+}
+
+function updateSetTime() {
+
+	  var updates = {};
+
+	  //1592653212080
+	  //alert(parseInt(new Date().getTime().toString()));
+	  var time = parseInt(new Date().getTime().toString());
+	  updates['/sets/'] = time;
+
+	  return updateInfoRef.update(updates);
+
+}
+
+function deleteSet(delSetname){
+
+	if(delSetname==''){ alert("삭제할 set name을 입력해주세요."); return;}
+
+	var updates = {};
+	updates['/sets/' + delSetname + '/'] = null;	// 해당 sets 삭제
+
+	return setRef.update(updates);
+
+}
+
+$(document).ready(function () {
+	$("#AddSetBtn").click(function () {
+
+		if(document.getElementById("set_data_list").value==""){ alert("sets 를 하나 이상 입력해주세요. "); return;}
+		if($("#set_name").val()==''){ alert("set name을 입력해주세요."); return;}
+
+		//줄 바꿈 문자를 기준으로 textarea 문자열을 분리
+		var txtBox = document.getElementById("set_data_list");
+		var lines = txtBox.value.split("\n");
+
+		var setJsonArray = new Array();
+
+		for (var i = 0; i < lines.length; i++) {
+			if(lines[i]!='') {  setJsonArray.push(lines[i]); }
+		}
+
+		writeNewPost(setJsonArray);		// sets 추가
+		updateSetTime();				// sets updateInfo 업데이트
+		alert("set 업데이트가 완료 되었습니다.");
+
+	});
+
+	$("#delSetBtn").click(function () {
+		var confirmText = confirm("정말 삭제하시겠습니까?");
+		if(confirmText==true){
+
+
+		var delSetname = $("#del_set_name").val();
+		deleteSet(delSetname);
+		updateSetTime();
+		alert("set 삭제가 완료 되었습니다.");
+
+
+		}else{
+			return;
+		}
+	});
+
+	$("#pathConfigBtn").click(function () {
+		var userID = $("#userID").val();
+		var botID = $("#botID").val();
+
+		setRef = firebase.database().ref().child('users').child(userID).child('bots').child(botID);
+		updateInfoRef = firebase.database().ref().child('users').child(userID).child('bots').child(botID).child('updateInfo');
+		alert("저장소 위치 : "+setRef);
+		//alert(updateInfoRef);
+		alert("입력되었습니다.");
+	});
+
+});
+
+</script>
+<!-- END Script -->
+
+<!-- START form -->
+<font color="red"><b>[필수 입력]</b></font> User ID : <input type="text" id="userID" size="50" value="YAnYTaRLEAPymXLvsrwAzxXhre72"/> Bot ID :
+    <input type="text" id="botID" size="50" value="BB-b10-20170703183409-e8VEzGzRNY"/><button id="pathConfigBtn" type="button">확인</button><br><br>
+
+
+<font color="blue"><p><b>[set 추가 및 수정]</b></p></font>sets 칸에는 set들을 엔터키로 구분해서 넣어주세요.<br><br>
+<b>set name: <input type="text" id="set_name" size="50"/><br><br>
+sets:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<textarea id="set_data_list" style="height:300px;"></textarea></b>
+ <button id="AddSetBtn" type="button">추가</button>
+<br><br>
+<font color="blue"><p><b>[set 삭제]</b></p></font>
+<b>삭제할 set name: <input type="text" id="del_set_name" size="50"/><button id="delSetBtn" type="button">삭제</button>
+<!-- END form -->
+
+</body>
+</html>

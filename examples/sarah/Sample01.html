@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>샘플01</title>
+    <meta name="샘플01" content="처음 만드는 html 페이지다!!">
+    <meta name="키워드" content="HTML,CSS,XML,JavaScript">
+    <meta name="작성자" content="토니">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script>
+        function getSearchResult(searchString) {
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("GET", "https://www.googleapis.com/customsearch/v1?key=AIzaSyARioMY1xqLmt7uOFtwOCzIrnPNxucocrU&cx=009598790766482736354:sqbfydt3cac&q="+searchString+"&alt=json", false);
+            xhttp.setRequestHeader("Content-type", "application/json");
+            xhttp.send();
+            var response = JSON.parse(xhttp.responseText);
+            console.log(response);
+
+            document.getElementById("search-title").innerHTML = response.items[0].title.toString();
+            document.getElementById("search-content").innerHTML = response.items[0].htmlSnippet.toString();
+
+            var imageURL = response.items[0].pagemap.cse_image[0].src.toString();
+            document.getElementById("search-image").innerHTML = "<img src=" + imageURL + " />";
+        }
+    </script>
+</head>
+<body>
+<div id="w3-main">
+    <div id="header" class="w3-container">
+        <button class="w3-button w3-black" name="send" title="API 호출" onclick="getSearchResult('한양대 맛집')" >서치 API 호출</button>
+    </div>
+    <div id="content" class="w3-container w3-white">
+        <h2>
+            <div id="search-title"></div>
+        </h2>
+        <p>
+        <div id="search-image"></div>
+        </p>
+        <p>
+            <div id="search-content"></div>
+        </p>
+
+    </div>
+</div>
+</body>
+</html>

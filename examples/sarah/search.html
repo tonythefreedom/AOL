@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:cursor="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="euc-kr">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.css"/>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <title>First Test Page</title>
+    <style>
+        table {
+            width: 1000px;
+            text-align: center;
+        }
+        td {
+            text-align: left;
+            vertical-align:top;
+        }
+        /*#more_button{
+            visibility:hidden;
+        }*/
+    </style>
+    <script type="text/javascript">
+        function btnClick() {
+            GoogleSearch();
+        }
+        $(function(){
+            $('#search').keydown(function( e ){
+                if( e.keyCode==13 ){
+                    GoogleSearch();
+                }
+            });
+        });
+
+        function GetFullpage(){
+            var searchword=$('#search').val();
+            window.location="https://www.google.co.kr/?gfe_rd=cr&ei=OGs_WZyaDbTEXsLKkogC#q="+encodeURI(searchword);
+        }
+        function detailPages(){
+            var number = $('#search')
+        }
+        function GoogleSearch(){
+            //$('#more_button').show();
+            var state = $('#more_button').css('display'); // state 변수에 ID가 moreMenu인 요소의 display의 속성을 '대입'
+            if(state == 'none'){ // state가 none 상태일경우
+                $('#more_button').show(); // ID가 moreMenu인 요소를 show();
+            }else{ // 그 외에는
+                $('#more_button').hide(); // ID가 moreMenu인 요소를 hide();
+            }
+            var searchword=$('#search').val();
+            needMorepages = true;
+            //window.location="https://www.google.co.kr/?gfe_rd=cr&ei=OGs_WZyaDbTEXsLKkogC#q="+searchword;
+            //window.location="https://search.naver.com/search.naver?where=nexearch&query="+val+"&sm=top_lve&ie=utf8";
+            var xhttp = new XMLHttpRequest();
+
+            xhttp.open("GET", "https://www.googleapis.com/customsearch/v1?key=AIzaSyARioMY1xqLmt7uOFtwOCzIrnPNxucocrU&cx=009598790766482736354:sqbfydt3cac&q="+ encodeURI(searchword)+"&alt=json", false);
+            xhttp.setRequestHeader("Content-type", "application/json");
+            xhttp.send();
+            var response = JSON.parse(xhttp.responseText);
+
+            var imageURL_1 = response.items[0].pagemap.cse_image[0].src.toString();
+            var imageURL_2 = response.items[1].pagemap.cse_image[0].src.toString();
+            var imageURL_3 = response.items[2].pagemap.cse_image[0].src.toString();
+            console.log(response);
+            document.getElementById("contents_1").innerHTML = "<table>"
+                +"<tr>"
+                +"<td >"+"<img src=" + imageURL_1 + " width = 180 height = 180 />"+"</td>"
+                +"<td >"+response.items[0].htmlSnippet.toString()+"</td>"
+                +"</tr>"
+
+                +"<tr>"
+                +"<td>"+"<img src=" + imageURL_2 + " width = 180 height = 180 />"+"</td>"
+                +"<td >"+response.items[1].htmlSnippet.toString()+"</td>"
+                +"</tr>"
+
+                +"<tr>"
+                +"<td >"+"<img src=" + imageURL_3 + " width = 180 height = 180 />"+"</td>"
+                +"<td >"+response.items[2].htmlSnippet.toString()+"</td>"
+                +"</tr>"
+                +"</table>";
+        }
+    </script>
+</head>
+<body bgcolor = "white">
+<div id = "main">
+    <div id= "search_box">
+        <input id="search" type="text" class="" style = "background: greenyellow"/>
+        <button onclick="btnClick()">Search</button>
+    </div>
+
+    <div id= "contents_1";  style = "cursor: pointer;" onclick="GetFullpage()">
+    </div>
+
+    <div id= "contents_2";  style = "cursor: pointer;" onclick="location.href='https://www.google.co.kr/?gfe_rd=cr&ei=OGs_WZyaDbTEXsLKkogC#q=';">
+    </div>
+
+    <div id= "contents_3";  style = "cursor: pointer;" onclick="location.href='https://www.google.co.kr/?gfe_rd=cr&ei=OGs_WZyaDbTEXsLKkogC#q=';">
+    </div>
+
+    <div id= "more_button">
+        <button onclick="GetFullpage()">더보기</button>
+    </div>
+</div>
+</body>
+</html>
